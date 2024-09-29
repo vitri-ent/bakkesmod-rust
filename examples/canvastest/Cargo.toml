@@ -2,11 +2,11 @@
 name = "canvastest"
 version = "0.1.0"
 authors = ["Arator <arator.rl@outlook.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 bakkesmod = { path = "../../" }
 
 [lib]
 name = "canvastest"
-crate_type = ["cdylib"]
+crate-type = ["cdylib"]

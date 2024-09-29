@@ -2,11 +2,11 @@
 name = "rustplugin"
 version = "0.1.0"
 authors = ["Arator"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 bakkesmod = { path = "../../" }
 
 [lib]
 name = "rustplugin"
-crate_type = ["cdylib"]
+crate-type = ["cdylib"]
