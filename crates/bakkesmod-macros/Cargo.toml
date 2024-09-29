@@ -11,6 +11,6 @@ repository = "https://github.com/AratorRL/bakkesmod-rust"
 proc-macro = true
 
 [dependencies]
-syn = { version = "1.0", features = ['visit', 'full'] }
+syn = { version = "2", features = ['visit', 'full'] }
 quote = "1.0"
 proc-macro2 = "1.0"
