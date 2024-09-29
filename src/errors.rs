@@ -6,15 +6,15 @@ pub struct BakkesModError(String);
 impl Error for BakkesModError {}
 
 impl BakkesModError {
-    pub fn new(msg: &str) -> BakkesModError {
-        Self(msg.to_owned())
-    }
+	pub fn new(msg: &str) -> BakkesModError {
+		Self(msg.to_owned())
+	}
 }
 
 impl fmt::Display for BakkesModError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		write!(f, "{}", self.0)
+	}
 }
 
 #[macro_export]

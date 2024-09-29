@@ -1,5 +1,5 @@
-use crate::wrappers::{*, structs::*, unreal::*};
 use super::*;
+use crate::wrappers::{structs::*, unreal::*, *};
 
 pub struct AttachmentPickupWrapper(pub usize);
 impl_object!(AttachmentPickupWrapper);
@@ -9,22 +9,21 @@ impl RumblePickupComponent for AttachmentPickupWrapper {}
 impl CarComponent for AttachmentPickupWrapper {}
 impl Actor for AttachmentPickupWrapper {}
 
-pub trait AttachmentPickup : RumblePickupComponent {
-    fn pickup_end(&self) {
-        unsafe {
-            SpecialPickup_Attachment_TA_PickupEnd(self.addr());
-        }
-    }
-    fn pickup_start(&self) {
-        unsafe {
-            SpecialPickup_Attachment_TA_PickupStart(self.addr());
-        }
-    }
-
+pub trait AttachmentPickup: RumblePickupComponent {
+	fn pickup_end(&self) {
+		unsafe {
+			SpecialPickup_Attachment_TA_PickupEnd(self.addr());
+		}
+	}
+	fn pickup_start(&self) {
+		unsafe {
+			SpecialPickup_Attachment_TA_PickupStart(self.addr());
+		}
+	}
 }
 
 extern "C" {
-    fn SpecialPickup_Attachment_TA_PickupEnd(obj: usize);
-    fn SpecialPickup_Attachment_TA_PickupStart(obj: usize);
+	fn SpecialPickup_Attachment_TA_PickupEnd(obj: usize);
+	fn SpecialPickup_Attachment_TA_PickupStart(obj: usize);
 
 }
