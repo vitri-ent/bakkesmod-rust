@@ -1,12 +1,13 @@
-use std::env;
+use std::{env, path::PathBuf};
 
 #[cfg(docsrs)]
 fn main() {}
 
 #[cfg(not(docsrs))]
 fn main() {
-	let bakkesmod_path = env::var("BAKKESMOD_LIB_PATH").expect("enviroment variable 'BAKKESMOD_LIB_PATH' not set!");
+	let crate_root: PathBuf = env::var("CARGO_MANIFEST_DIR").unwrap().into();
+	let sdk_path = crate_root.join("lib");
 
-	println!("cargo:rustc-link-search={}", bakkesmod_path);
-	println!("cargo:rustc-link-lib=pluginsdk");
+	println!("cargo:rustc-link-search={}", sdk_path.display());
+	println!("cargo:rustc-link-lib=BakkesPluginSDK180");
 }
