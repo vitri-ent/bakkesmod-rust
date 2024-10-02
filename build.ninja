@@ -1,0 +1,25 @@
+cflags = -Wno-nonportable-include-path -Wno-microsoft-include $
+    -Iinclude
+
+builddir = build
+
+rule cc
+    command = clang -MMD -MT $out -MF $out.d $cflags -c $in -o $out
+    description = CXX $out
+    depfile = $out.d
+    deps = gcc
+
+rule ar
+    command = llvm-ar crs $out $in
+    description = AR $out
+
+build $builddir/Common.o: cc binding/Common.cc
+build $builddir/Plugin.o: cc binding/Plugin.cc
+
+build $builddir/CVar.o: cc binding/CVar.cc
+build $builddir/CVarManager.o: cc binding/CVarManager.cc
+
+build lib/bmrs.lib: ar $builddir/Common.o $builddir/Plugin.o $
+    $builddir/CVar.o $builddir/CVarManager.o
+
+default lib/bmrs.lib

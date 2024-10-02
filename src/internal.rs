@@ -1,7 +1,8 @@
 use std::sync::Mutex;
 
+use crate::prelude::cvar_manager::CVarManager;
 use crate::wrappers::canvas::Canvas;
-use crate::wrappers::cvar::CVar;
+use crate::wrappers::cvar::OldCVar;
 
 pub type HookCallback = dyn FnMut();
 pub type HookWithCallerCallback<T> = dyn FnMut(Box<T>);
@@ -10,10 +11,33 @@ pub type DrawableCallback = dyn FnMut(Canvas);
 pub type TimeoutCallback = dyn FnMut();
 
 pub type NotifierCallback = dyn FnMut(Vec<String>);
-pub type OnValueChangedCallback = dyn FnMut(String, CVar);
+pub type OnValueChangedCallback = dyn FnMut(String, OldCVar);
+
+#[repr(C)]
+pub struct PluginInfo {
+	pub api_build_version: u16,
+	pub file_name: *const u8,
+	pub class_name: *const u8,
+	pub plugin_name: *const u8,
+	pub plugin_version: *const u8,
+	pub plugin_type: u32,
+	pub initialize_func: unsafe extern "C" fn() -> usize,
+	pub del_func: unsafe extern "C" fn()
+}
+
+unsafe impl Send for PluginInfo {}
+unsafe impl Sync for PluginInfo {}
+
+extern "C" {
+	pub fn bmrs_pluginInit() -> usize;
+	pub fn bmrs_pluginUninit();
+}
 
 pub trait BakkesMod {
 	fn id(&self) -> u64;
+
+	fn cvar_manager(&self) -> &CVarManager;
+
 	fn add_notifier_callback(&self, addr: usize);
 	fn add_on_value_changed_callback(&self, addr: usize);
 	fn add_hook_callback(&self, addr: usize);
@@ -31,9 +55,9 @@ pub trait BakkesMod {
 
 static mut BAKKESMOD: &dyn BakkesMod = &Dummy;
 
-pub fn bakkesmod_init(id: u64) {
+pub fn bakkesmod_init(cvm: *mut (), game: *mut ()) {
 	let bm_wrapper = Box::new(BakkesModWrapper {
-		id,
+		cvar_manager: CVarManager::from_raw(cvm),
 		notifier_callbacks: Mutex::new(Vec::new()),
 		on_value_changed_callbacks: Mutex::new(Vec::new()),
 		hook_callbacks: Mutex::new(Vec::new()),
@@ -47,6 +71,14 @@ pub fn bakkesmod_init(id: u64) {
 }
 
 pub fn bakkesmod_exit() {
+	let cvar_manager = unsafe { BAKKESMOD }.cvar_manager();
+	if let Ok(mut cbs) = cvar_manager.on_changed_cbs.lock() {
+		drop(cbs.drain());
+	}
+	if let Ok(mut cbs) = cvar_manager.notifier_cbs.lock() {
+		drop(cbs.drain());
+	}
+
 	drop_notifier_callbacks();
 	drop_on_value_changed_callbacks();
 	drop_hook_callbacks();
@@ -60,7 +92,7 @@ pub fn bakkesmod() -> &'static dyn BakkesMod {
 }
 
 struct BakkesModWrapper {
-	pub id: u64,
+	pub cvar_manager: CVarManager,
 	pub notifier_callbacks: Mutex<Vec<usize>>,
 	pub on_value_changed_callbacks: Mutex<Vec<usize>>,
 	pub hook_callbacks: Mutex<Vec<usize>>,
@@ -71,7 +103,11 @@ struct BakkesModWrapper {
 
 impl BakkesMod for BakkesModWrapper {
 	fn id(&self) -> u64 {
-		self.id
+		0
+	}
+
+	fn cvar_manager(&self) -> &CVarManager {
+		&self.cvar_manager
 	}
 
 	fn add_notifier_callback(&self, addr: usize) {
@@ -188,6 +224,9 @@ struct Dummy;
 impl BakkesMod for Dummy {
 	fn id(&self) -> u64 {
 		0
+	}
+	fn cvar_manager(&self) -> &CVarManager {
+		panic!()
 	}
 	fn add_notifier_callback(&self, _: usize) {}
 	fn add_on_value_changed_callback(&self, _: usize) {}

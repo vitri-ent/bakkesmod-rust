@@ -107,7 +107,8 @@ pub mod console;
 pub mod game;
 pub mod wrappers;
 
-mod internal;
+#[doc(hidden)]
+pub mod internal;
 
 pub mod prelude {
 	pub use bakkesmod_error;

@@ -10,4 +10,7 @@ fn main() {
 
 	println!("cargo:rustc-link-search={}", sdk_path.display());
 	println!("cargo:rustc-link-lib=BakkesPluginSDK180");
+	println!("cargo:rustc-link-lib=bmrs");
+
+	println!("cargo:rerun-if-changed={}", sdk_path.join("bmrs.lib").display());
 }

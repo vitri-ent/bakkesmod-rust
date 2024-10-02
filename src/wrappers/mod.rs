@@ -14,6 +14,7 @@ mod macros;
 
 pub mod canvas;
 pub mod cvar;
+pub mod cvar_manager;
 pub mod mmr;
 pub mod structs;
 pub mod unreal;

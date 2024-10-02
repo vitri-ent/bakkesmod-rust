@@ -1,11 +1,73 @@
+use core::{slice, str};
 use std::convert::From;
 use std::ffi::{CStr, CString};
-use std::fmt;
+use std::hash::{Hash, Hasher};
 use std::marker::{PhantomData, Sized};
-use std::ops;
+use std::mem::ManuallyDrop;
+use std::ops::{self, Deref};
 use std::os::raw::c_char;
+use std::{fmt, ptr};
 
 use super::*;
+
+#[repr(C)]
+pub struct BmrsString {
+	ptr: *const u8,
+	len: usize,
+	backing_ptr: *const ()
+}
+
+impl Deref for BmrsString {
+	type Target = str;
+
+	fn deref(&self) -> &Self::Target {
+		unsafe { std::str::from_utf8_unchecked(slice::from_raw_parts(self.ptr, self.len)) }
+	}
+}
+
+impl PartialEq for BmrsString {
+	fn eq(&self, other: &Self) -> bool {
+		self.deref().eq(other.deref())
+	}
+}
+impl Eq for BmrsString {}
+
+impl Hash for BmrsString {
+	fn hash<H: Hasher>(&self, state: &mut H) {
+		self.deref().hash(state)
+	}
+}
+
+impl Drop for BmrsString {
+	fn drop(&mut self) {
+		if self.backing_ptr.is_null() {
+			// rust-allocated string
+			drop(unsafe { String::from_raw_parts(self.ptr.cast_mut(), self.len, self.len) });
+		} else {
+			// C++-allocated string
+			extern "C" {
+				fn bmrsString_drop(s: *mut BmrsString);
+			};
+			unsafe {
+				bmrsString_drop(self);
+			}
+		}
+	}
+}
+
+impl From<&str> for BmrsString {
+	fn from(value: &str) -> Self {
+		Self::from(value.to_string())
+	}
+}
+
+impl From<String> for BmrsString {
+	fn from(mut s: String) -> Self {
+		let s = ManuallyDrop::new(s.into_boxed_str());
+		let (ptr, len) = (s.as_ptr(), s.len());
+		BmrsString { ptr, len, backing_ptr: ptr::null() }
+	}
+}
 
 #[repr(C)]
 pub struct RLArray<T: UnrealPointer> {
