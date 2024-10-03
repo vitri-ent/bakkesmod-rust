@@ -100,8 +100,6 @@
 
 #[macro_use]
 mod macros;
-#[macro_use]
-mod errors;
 
 pub mod console;
 pub mod game;
@@ -111,7 +109,6 @@ pub mod wrappers;
 pub mod internal;
 
 pub mod prelude {
-	pub use bakkesmod_error;
 	pub use bakkesmod_macros::plugin_init;
 	pub use {color, lin_color, log_console, vec2, vec3};
 

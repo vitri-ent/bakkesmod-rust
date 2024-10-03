@@ -1,24 +1,21 @@
 macro_rules! impl_object {
 	($name: ident) => {
-		impl Object for $name {
-			fn new(addr: usize) -> Self {
-				Self(addr)
+		impl $crate::wrappers::ObjectT for $name {
+			fn new(ptr: *mut ()) -> Self {
+				Self(ptr)
 			}
 
-			fn try_new(addr: usize) -> Option<Self> {
-				match addr {
-					0 => None,
-					_ => Some(Self(addr))
-				}
+			fn try_new(ptr: *mut ()) -> Option<Self> {
+				if ptr.is_null() { None } else { Some(Self(ptr)) }
 			}
 
-			fn addr(&self) -> usize {
+			fn ptr(&self) -> *mut () {
 				self.0
 			}
 		}
 
-		impl UnrealPointer for $name {
-			fn from_ptr(addr: usize) -> Self {
+		impl $crate::wrappers::UnrealPointer for $name {
+			fn from_ptr(addr: *mut ()) -> Self {
 				Self(addr)
 			}
 		}
@@ -27,8 +24,8 @@ macro_rules! impl_object {
 
 macro_rules! impl_unreal_pointer_struct {
 	($name: ident) => {
-		impl UnrealPointer for $name {
-			fn from_ptr(addr: usize) -> Self {
+		impl $crate::wrappers::UnrealPointer for $name {
+			fn from_ptr(addr: *mut ()) -> Self {
 				unsafe { *(addr as *const Self) }
 			}
 		}

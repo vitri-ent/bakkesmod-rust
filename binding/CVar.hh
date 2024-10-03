@@ -10,6 +10,9 @@ typedef void (*bmrsCVarValueChangedHandler)(bmrsString old, const bmrsCVar *newV
 
 namespace bmrs {
 	static inline bmrsCVar *ConvertCVar(CVarWrapper native) {
+		if (!native) {
+			return nullptr;
+		}
 		CVarWrapper *s = new CVarWrapper(native);
 		return (bmrsCVar *)s;
 	}

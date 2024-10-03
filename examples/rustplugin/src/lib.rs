@@ -1,7 +1,11 @@
+use std::mem::ManuallyDrop;
+
+use actor::Actor;
+use actor::ActorT;
 use bakkesmod::console;
 use bakkesmod::game;
 use bakkesmod::prelude::*;
-use bakkesmod::wrappers::unreal::*;
+use server::ServerT;
 
 #[plugin_init(RustPlugin)]
 pub fn on_load() {
@@ -21,6 +25,17 @@ pub fn on_load() {
 
 	console::register_notifier("rust_copy", move |args| {
 		log_console!("{}", args.join(" "));
+	});
+
+	console::register_notifier("rust_ball", |_| match game::current_state() {
+		None => log_console!("no server"),
+		Some(server) => log_console!("ball pos: {}", server.get_ball().unwrap().position())
+	});
+
+	game::hook_event("Function TAGame.Car_TA.OnHitBall", |car, params| {
+		let ball = unsafe { params.get_actor::<Actor>(0) };
+
+		log_console!("player hit ball @ pos {}", ball.position());
 	});
 
 	// console::register_notifier(
@@ -183,19 +198,19 @@ pub fn on_load() {
 	// console::register_notifier("rust_spawn_car", Box::new(spawn_car_callback));
 }
 
-fn normal_function_callback(params: Vec<String>) {
-	log_console!("this is the callback for rust_notifier!");
-	log_console!("params = {:x?}", params);
-}
+// fn normal_function_callback(params: Vec<String>) {
+// 	log_console!("this is the callback for rust_notifier!");
+// 	log_console!("params = {:x?}", params);
+// }
 
-fn spawn_car_callback(_: Vec<String>) {
-	let game = match game::get_game_event_as_server() {
-		Some(g) => g,
-		None => {
-			log_console!("game is null!");
-			return;
-		}
-	};
+// fn spawn_car_callback(_: Vec<String>) {
+// 	let game = match game::get_game_event_as_server() {
+// 		Some(g) => g,
+// 		None => {
+// 			log_console!("game is null!");
+// 			return;
+// 		}
+// 	};
 
-	game.spawn_bot(22, "Bors");
-}
+// 	game.spawn_bot(22, "Bors");
+// }

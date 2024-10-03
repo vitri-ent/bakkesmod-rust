@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <bakkesmod/wrappers/wrapperstructs.h>
+#include <bakkesmod/wrappers/WrapperStructs.h>
 
 extern "C" {
 	struct bmrsString {
@@ -16,6 +16,19 @@ extern "C" {
 		float g;
 		float b;
 		float a;
+	};
+
+	struct bmrsVec3 {
+		float x;
+		float y;
+		float z;
+	};
+
+	struct bmrsQuat {
+		float x;
+		float y;
+		float z;
+		float w;
 	};
 }
 
@@ -39,5 +52,34 @@ namespace bmrs {
 			.b = color.B,
 			.a = color.A
 		};
+	}
+
+	static inline bmrsVec3 ConvertVec3(Vector vec) {
+		return bmrsVec3 {
+			.x = vec.X,
+			.y = vec.Y,
+			.z = vec.Z
+		};
+	}
+
+	static inline Vector ConvertVec3(bmrsVec3 vec) {
+		return Vector(vec.x, vec.y, vec.z);
+	}
+
+	static inline bmrsQuat ConvertQuat(Quat quat) {
+		return bmrsQuat {
+			.x = quat.X,
+			.y = quat.Y,
+			.z = quat.Z,
+			.w = quat.W
+		};
+	}
+
+	static inline bmrsQuat ConvertQuat(Rotator rotator) {
+		return bmrs::ConvertQuat(RotatorToQuat(rotator));
+	}
+
+	static inline Rotator ConvertQuat(bmrsQuat quat) {
+		return QuatToRotator(Quat(quat.w, quat.x, quat.y, quat.z));
 	}
 }

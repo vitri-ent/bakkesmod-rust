@@ -12,24 +12,28 @@ use crate::prelude::*;
 #[macro_use]
 mod macros;
 
-pub mod canvas;
+pub mod actor;
 pub mod cvar;
 pub mod cvar_manager;
-pub mod mmr;
+pub mod game;
+pub mod server;
 pub mod structs;
-pub mod unreal;
 
 pub trait UnrealPointer {
-	fn from_ptr(addr: usize) -> Self;
+	fn from_ptr(addr: *mut ()) -> Self;
 }
 
-pub trait Object: UnrealPointer {
-	fn new(addr: usize) -> Self;
-	fn try_new(addr: usize) -> Option<Self>
+pub trait ObjectT: UnrealPointer {
+	fn new(addr: *mut ()) -> Self;
+	fn try_new(addr: *mut ()) -> Option<Self>
 	where
 		Self: Sized;
-	fn addr(&self) -> usize;
+	fn ptr(&self) -> *mut ();
 }
 
-pub struct ObjectWrapper(pub usize);
-impl_object!(ObjectWrapper);
+pub unsafe trait Wrapper: ObjectT {
+	unsafe fn wrap(addr: usize) -> Self;
+}
+
+pub struct Object(*mut ());
+impl_object!(Object);

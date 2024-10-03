@@ -5,7 +5,7 @@ use std::os::raw::c_char;
 use std::ptr::{self, addr_of, addr_of_mut};
 use std::sync::Mutex;
 
-use super::cvar::{CVar, OldCVar};
+use super::cvar::CVar;
 use super::structs::BmrsString;
 
 pub struct CVarManager {
@@ -66,13 +66,41 @@ impl CVarManager {
 		unsafe { bmrsCVarManager_remove_cvar(self.ptr, &cvar.into()) }
 	}
 
+	pub fn get_bind(&self, key: &str) -> String {
+		unsafe { bmrsCVarManager_get_bind_string_for_key(self.ptr, &key.into()) }.to_string()
+	}
+
+	pub fn set_bind(&self, key: &str, command: &str) {
+		unsafe { bmrsCVarManager_set_bind(self.ptr, &key.into(), &command.into()) };
+	}
+
+	pub fn get_alias(&self, alias: &str) -> String {
+		unsafe { bmrsCVarManager_get_alias(self.ptr, &alias.into()) }.to_string()
+	}
+
+	pub fn set_alias(&self, key: &str, script: &str) {
+		unsafe { bmrsCVarManager_set_alias(self.ptr, &key.into(), &script.into()) };
+	}
+
+	pub fn backup_cfg(&self, path: &str) {
+		unsafe { bmrsCVarManager_backup_cfg(self.ptr, &path.into()) };
+	}
+
+	pub fn backup_binds(&self, path: &str) {
+		unsafe { bmrsCVarManager_backup_binds(self.ptr, &path.into()) };
+	}
+
+	pub fn load_cfg(&self, path: &str) {
+		unsafe { bmrsCVarManager_load_cfg(self.ptr, &path.into()) };
+	}
+
 	extern "C" fn register_notifier_callback(args: *const BmrsString, n_args: usize, aux: *mut ()) {
 		let mut args_vec = Vec::with_capacity(n_args);
 		for i in 0..n_args {
 			args_vec.push(unsafe { ptr::read(args.add(i)) }.to_string());
 		}
 
-		let mut closure = unsafe { Box::from_raw(aux as *mut Box<dyn Fn(Vec<String>)>) };
+		let mut closure = unsafe { Box::from_raw(aux as *mut Box<dyn FnMut(Vec<String>)>) };
 		(*closure)(args_vec);
 		let _ = Box::into_raw(closure);
 	}
@@ -104,4 +132,12 @@ extern "C" {
 	fn bmrsCVarManager_remove_cvar(this: *mut (), cvar: *const BmrsString) -> bool;
 	fn bmrsCVarManager_log(this: *mut (), message: *const BmrsString);
 	fn bmrsCVarManager_get_cvar(this: *mut (), cvar: *const BmrsString) -> *mut ();
+	fn bmrsCVarManager_get_bind_string_for_key(this: *mut (), key: *const BmrsString) -> BmrsString;
+	fn bmrsCVarManager_set_bind(this: *mut (), key: *const BmrsString, command: *const BmrsString) -> BmrsString;
+	fn bmrsCVarManager_remove_bind(this: *mut (), key: *const BmrsString);
+	fn bmrsCVarManager_get_alias(this: *mut (), alias: *const BmrsString) -> BmrsString;
+	fn bmrsCVarManager_set_alias(this: *mut (), key: *const BmrsString, script: *const BmrsString);
+	fn bmrsCVarManager_backup_cfg(this: *mut (), path: *const BmrsString);
+	fn bmrsCVarManager_backup_binds(this: *mut (), path: *const BmrsString);
+	fn bmrsCVarManager_load_cfg(this: *mut (), path: *const BmrsString);
 }

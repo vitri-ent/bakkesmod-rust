@@ -80,11 +80,7 @@ extern "C" {
 
 	bmrsCVar *bmrsCVarManager_get_cvar(const bmrsCVarManager *self, bmrsString *name) {
 		CVarManagerWrapper *native = (CVarManagerWrapper *)self;
-		CVarWrapper cvar = native->getCvar(bmrs::ConvertString(name));
-		if (!cvar) {
-			return nullptr;
-		}
-		return bmrs::ConvertCVar(cvar);
+		return bmrs::ConvertCVar(native->getCvar(bmrs::ConvertString(name)));
 	}
 
 	bmrsString bmrsCVarManager_get_bind_string_for_key(const bmrsCVarManager *self, bmrsString *key) {

@@ -102,7 +102,7 @@ impl<T: UnrealPointer> RLArray<T> {
 	pub fn get(&self, index: isize) -> T {
 		unsafe {
 			let ptr = self.data.offset(index);
-			T::from_ptr(*ptr)
+			T::from_ptr(*ptr as *mut ())
 		}
 	}
 }
@@ -136,9 +136,9 @@ impl RLString {
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Vector {
-	x: f32,
-	y: f32,
-	z: f32
+	pub x: f32,
+	pub y: f32,
+	pub z: f32
 }
 
 impl Vector {
@@ -239,12 +239,11 @@ impl Rotator {
 
 #[derive(Copy, Clone)]
 #[repr(C)]
-#[repr(align(16))]
 pub struct Quat {
-	x: f32,
-	y: f32,
-	z: f32,
-	w: f32
+	pub x: f32,
+	pub y: f32,
+	pub z: f32,
+	pub w: f32
 }
 
 impl Quat {
@@ -279,10 +278,10 @@ impl Color {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct LinearColor {
-	r: f32,
-	g: f32,
-	b: f32,
-	a: f32
+	pub r: f32,
+	pub g: f32,
+	pub b: f32,
+	pub a: f32
 }
 impl_unreal_pointer_struct!(LinearColor);
 
