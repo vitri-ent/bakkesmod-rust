@@ -3,7 +3,7 @@
 #include <bakkesmod/wrappers/GameWrapper.h>
 #include <bakkesmod/wrappers/Engine/ActorWrapper.h>
 
-#include "./Actor.hh"
+#include "./Car.hh"
 #include "./Common.hh"
 #include "./Game.hh"
 #include "./Server.hh"
@@ -24,7 +24,7 @@ extern "C" {
 		native->HookEventWithCaller<ActorWrapper>(
 			bmrs::ConvertString(eventName),
 			[=](ActorWrapper caller, void *params, std::string eventName) {
-				cb((bmrsActor *)&caller, params, bmrs::ConvertString(eventName), aux);
+				cb(caller.memory_address, params, bmrs::ConvertString(eventName), aux);
 			}
 		);
 	}
@@ -39,7 +39,7 @@ extern "C" {
 		native->HookEventWithCallerPost<ActorWrapper>(
 			bmrs::ConvertString(eventName),
 			[=](ActorWrapper caller, void *params, std::string eventName) {
-				cb((bmrsActor *)&caller, params, bmrs::ConvertString(eventName), aux);
+				cb(caller.memory_address, params, bmrs::ConvertString(eventName), aux);
 			}
 		);
 	}
@@ -47,5 +47,10 @@ extern "C" {
 	bmrsServer *bmrsGame_get_current_state(const bmrsGame *self) {
 		GameWrapper *native = (GameWrapper *)self;
 		return bmrs::ConvertServer(native->GetGameEventAsServer());
+	}
+
+	bmrsCar *bmrsGame_get_local_car(const bmrsGame *self) {
+		GameWrapper *native = (GameWrapper *)self;
+		return bmrs::ConvertCar(native->GetLocalCar());
 	}
 }

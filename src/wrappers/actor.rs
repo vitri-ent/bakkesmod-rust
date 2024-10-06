@@ -1,13 +1,14 @@
-use super::{structs::Vector, ObjectT, Wrapper};
+use super::{structs::Vector, ObjectT, Quat, Wrapper};
 
+#[repr(transparent)]
 pub struct Actor(*mut ());
 impl_object!(Actor);
 
 impl ActorT for Actor {}
 
 unsafe impl Wrapper for Actor {
-	unsafe fn wrap(addr: usize) -> Self {
-		Self(unsafe { bmrsActor_wrap(addr) })
+	unsafe fn wrap_ptr(addr: usize) -> *mut () {
+		unsafe { bmrsActor_wrap(addr) }
 	}
 }
 
@@ -24,6 +25,10 @@ pub trait ActorT: ObjectT {
 		unsafe { bmrsActor_get_angular_velocity(self.ptr()) }
 	}
 
+	fn rotation(&self) -> Quat {
+		unsafe { bmrsActor_get_rotation(self.ptr()) }
+	}
+
 	fn is_hidden(&self) -> bool {
 		unsafe { bmrsActor_is_hidden(self.ptr()) }
 	}
@@ -31,7 +36,7 @@ pub trait ActorT: ObjectT {
 
 impl Drop for Actor {
 	fn drop(&mut self) {
-		// unsafe { bmrsActor_drop(self.0) };
+		unsafe { bmrsActor_drop(self.0) };
 	}
 }
 
@@ -40,6 +45,7 @@ extern "C" {
 	fn bmrsActor_get_location(this: *mut ()) -> Vector;
 	fn bmrsActor_get_linear_velocity(this: *mut ()) -> Vector;
 	fn bmrsActor_get_angular_velocity(this: *mut ()) -> Vector;
+	fn bmrsActor_get_rotation(this: *mut ()) -> Quat;
 	fn bmrsActor_is_hidden(this: *mut ()) -> bool;
 	fn bmrsActor_drop(this: *mut ());
 }

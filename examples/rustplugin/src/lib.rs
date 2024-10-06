@@ -1,11 +1,10 @@
 use std::mem::ManuallyDrop;
 
-use actor::Actor;
-use actor::ActorT;
 use bakkesmod::console;
 use bakkesmod::game;
 use bakkesmod::prelude::*;
-use server::ServerT;
+use bakkesmod::wrappers::Actor;
+use bakkesmod::wrappers::Car;
 
 #[plugin_init(RustPlugin)]
 pub fn on_load() {
@@ -27,26 +26,28 @@ pub fn on_load() {
 		log_console!("{}", args.join(" "));
 	});
 
-	console::register_notifier("rust_ball", |_| match game::current_state() {
+	console::register_notifier("rust_spawn", |_| match game::current_state() {
 		None => log_console!("no server"),
-		Some(server) => log_console!("ball pos: {}", server.get_ball().unwrap().position())
+		Some(server) => server.spawn_car("doobus")
 	});
 
-	game::hook_event("Function TAGame.Car_TA.OnHitBall", |car, params| {
-		let ball = unsafe { params.get_actor::<Actor>(0) };
-
-		log_console!("player hit ball @ pos {}", ball.position());
+	game::hook_event("Function TAGame.Car_TA.OnHitBall", |car: &Car, params| {
+		// let ball = unsafe { params.get_actor::<Actor>(0) };
+		// log_console!("player hit ball @ pos {} (hf {})", car.position(), car.has_flip());
+		let server = game::current_state().unwrap();
+		log_console!("cars: {}", server.cars().len());
+		for car in server.cars() {
+			let pri = car.pri();
+			log_console!("car ({}) {} - boost {}", pri.index(), pri.player_name(), car.boost().amount());
+		}
 	});
 
-	// console::register_notifier(
-	// 	"rust_demolish",
-	// 	Box::new(move |_: Vec<String>| {
-	// 		match game::get_local_car() {
-	// 			Some(car) => car.demolish(),
-	// 			None => log_console!("Car is NULL")
-	// 		};
-	// 	})
-	// );
+	console::register_notifier("rust_demolish", |args| {
+		match game::local_car() {
+			Some(car) => car.demolish(),
+			None => log_console!("Car is NULL")
+		};
+	});
 
 	// console::register_notifier("rust_notifier", Box::new(normal_function_callback));
 

@@ -12,12 +12,31 @@ use crate::prelude::*;
 #[macro_use]
 mod macros;
 
-pub mod actor;
-pub mod cvar;
-pub mod cvar_manager;
-pub mod game;
-pub mod server;
-pub mod structs;
+mod actor;
+pub use self::actor::{Actor, ActorT};
+mod boost;
+pub use self::boost::{Boost, BoostT};
+mod boost_pickup;
+pub use self::boost_pickup::{BoostPickup, BoostPickupT};
+mod car;
+pub use self::car::{Car, CarT};
+mod cvar;
+pub use self::cvar::{CVar, CVarValue, CVarValueSetter};
+mod cvar_manager;
+pub use self::cvar_manager::CVarManager;
+mod game;
+pub use self::game::{EventParams, Game};
+mod player_replication_info;
+pub use self::player_replication_info::{PlayerReplicationInfo, PlayerReplicationInfoT};
+mod pri;
+pub use self::pri::{Pri, PriT};
+mod server;
+pub use self::server::{Server, ServerT};
+mod structs;
+pub use self::structs::{LinearColor, Quat, Vector, Vector2};
+mod team_info;
+mod vehicle;
+pub use self::vehicle::{Vehicle, VehicleT};
 
 pub trait UnrealPointer {
 	fn from_ptr(addr: *mut ()) -> Self;
@@ -32,7 +51,14 @@ pub trait ObjectT: UnrealPointer {
 }
 
 pub unsafe trait Wrapper: ObjectT {
-	unsafe fn wrap(addr: usize) -> Self;
+	unsafe fn wrap_ptr(addr: usize) -> *mut ();
+
+	unsafe fn wrap(addr: usize) -> Self
+	where
+		Self: Sized
+	{
+		Self::new(unsafe { Self::wrap_ptr(addr) })
+	}
 }
 
 pub struct Object(*mut ());

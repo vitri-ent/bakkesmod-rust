@@ -1,10 +1,20 @@
-use std::{collections::HashMap, mem::ManuallyDrop, ptr, sync::Mutex};
+use std::{
+	collections::HashMap,
+	mem::{self, ManuallyDrop},
+	ptr,
+	sync::Mutex
+};
 
-use super::{actor::Actor, server::Server, structs::BmrsString, ObjectT, UnrealPointer, Wrapper};
+use super::{actor::Actor, car::Car, server::Server, structs::BmrsString, ActorT, ObjectT, UnrealPointer, Wrapper};
+
+pub(crate) struct HookCallback {
+	wrapper_factory: unsafe fn(usize) -> *mut (),
+	cb: Box<dyn FnMut(&Actor, EventParams)>
+}
 
 pub struct Game {
 	pub ptr: *mut (),
-	pub(crate) hook_cbs: Mutex<HashMap<String, Vec<Box<Box<dyn FnMut(&Actor, EventParams)>>>>>
+	pub(crate) hook_cbs: Mutex<HashMap<String, Vec<Box<HookCallback>>>>
 }
 
 impl Game {
@@ -19,11 +29,16 @@ impl Game {
 		unsafe { bmrsGame_is_in_game(self.ptr) }
 	}
 
-	pub fn hook_event<F>(&self, event: &str, cb: F)
+	pub fn hook_event<F, A: ActorT + Wrapper>(&self, event: &str, cb: F)
 	where
-		F: FnMut(&Actor, EventParams) + 'static
+		F: FnMut(&A, EventParams) + 'static
 	{
-		let cb = Box::new(Box::new(cb) as Box<dyn FnMut(&Actor, EventParams)>);
+		let cb = Box::new(HookCallback {
+			wrapper_factory: A::wrap_ptr,
+			cb: unsafe {
+				mem::transmute::<Box<dyn FnMut(&A, EventParams)>, Box<dyn FnMut(&Actor, EventParams)>>(Box::new(cb) as Box<dyn FnMut(&A, EventParams)>)
+			}
+		});
 		unsafe {
 			bmrsGame_hook_event(self.ptr, &event.into(), Self::hook_event_cb, &*cb as *const _ as *mut ());
 		};
@@ -34,11 +49,15 @@ impl Game {
 		Server::try_new(unsafe { bmrsGame_get_current_state(self.ptr) })
 	}
 
-	extern "C" fn hook_event_cb(caller: *mut (), params: *mut (), event_name: BmrsString, aux: *mut ()) {
-		let actor = ManuallyDrop::new(Actor::from_ptr(caller));
-		let mut closure = unsafe { Box::from_raw(aux as *mut Box<dyn FnMut(&Actor, EventParams)>) };
-		(*closure)(&actor, EventParams::new(params));
-		let _ = Box::into_raw(closure);
+	pub fn local_car(&self) -> Option<Car> {
+		Car::try_new(unsafe { bmrsGame_get_local_car(self.ptr) })
+	}
+
+	extern "C" fn hook_event_cb(caller: usize, params: *mut (), event_name: BmrsString, aux: *mut ()) {
+		let mut cb = unsafe { Box::from_raw(aux as *mut HookCallback) };
+		let actor = ManuallyDrop::new(Actor::from_ptr(unsafe { (cb.wrapper_factory)(caller) }));
+		(cb.cb)(&actor, EventParams::new(params));
+		let _ = Box::into_raw(cb);
 	}
 }
 
@@ -74,14 +93,15 @@ extern "C" {
 	fn bmrsGame_hook_event(
 		this: *mut (),
 		event_name: *const BmrsString,
-		cb: extern "C" fn(caller: *mut (), params: *mut (), event_name: BmrsString, aux: *mut ()),
+		cb: extern "C" fn(caller: usize, params: *mut (), event_name: BmrsString, aux: *mut ()),
 		aux: *mut ()
 	);
 	fn bmrsGame_hook_event_post(
 		this: *mut (),
 		event_name: *const BmrsString,
-		cb: extern "C" fn(caller: *mut (), params: *mut (), event_name: BmrsString, aux: *mut ()),
+		cb: extern "C" fn(caller: usize, params: *mut (), event_name: BmrsString, aux: *mut ()),
 		aux: *mut ()
 	);
+	fn bmrsGame_get_local_car(this: *mut ()) -> *mut ();
 	fn bmrsGame_get_current_state(this: *mut ()) -> *mut ();
 }

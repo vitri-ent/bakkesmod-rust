@@ -17,12 +17,22 @@ build $builddir/Common.o: cc binding/Common.cc
 build $builddir/Plugin.o: cc binding/Plugin.cc
 
 build $builddir/Actor.o: cc binding/Actor.cc
+build $builddir/Boost.o: cc binding/Boost.cc
+build $builddir/BoostPickup.o: cc binding/BoostPickup.cc
+build $builddir/Car.o: cc binding/Car.cc
 build $builddir/CVar.o: cc binding/CVar.cc
 build $builddir/CVarManager.o: cc binding/CVarManager.cc
 build $builddir/Game.o: cc binding/Game.cc
+build $builddir/PlayerReplicationInfo.o: cc binding/PlayerReplicationInfo.cc
+build $builddir/Pri.o: cc binding/Pri.cc
+build $builddir/PriX.o: cc binding/PriX.cc
 build $builddir/Server.o: cc binding/Server.cc
+build $builddir/TeamInfo.o: cc binding/TeamInfo.cc
+build $builddir/Vehicle.o: cc binding/Vehicle.cc
 
 build lib/bmrs.lib: ar $builddir/Common.o $builddir/Plugin.o $
-    $builddir/Actor.o $builddir/CVar.o $builddir/CVarManager.o $builddir/Game.o $builddir/Server.o
+    $builddir/Actor.o $builddir/Boost.o $builddir/BoostPickup.o $builddir/Car.o $builddir/CVar.o $builddir/CVarManager.o $
+    $builddir/Game.o $builddir/PlayerReplicationInfo.o $builddir/Pri.o $builddir/PriX.o $builddir/Server.o $builddir/TeamInfo.o $
+    $builddir/Vehicle.o
 
 default lib/bmrs.lib

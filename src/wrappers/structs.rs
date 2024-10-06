@@ -70,53 +70,28 @@ impl From<String> for BmrsString {
 }
 
 #[repr(C)]
-pub struct RLArray<T: UnrealPointer> {
-	pub data: *mut usize,
-	count: u32,
-	max: u32,
-	phantom: PhantomData<T>
+pub struct BmrsArray<T: Wrapper> {
+	ptr: *mut *mut (),
+	len: usize,
+	backed: *mut PhantomData<T>
 }
 
-impl<T: UnrealPointer> RLArray<T> {
-	pub fn from_raw(raw: RLArrayRaw) -> RLArray<T> {
-		RLArray {
-			data: raw.data as *mut usize,
-			count: 0,
-			max: 0,
-			phantom: PhantomData
+impl<T: Wrapper> BmrsArray<T> {
+	pub fn into_vec(self, dropper: unsafe extern "C" fn(d: *const Self)) -> Vec<T> {
+		let mut x = Vec::with_capacity(self.len);
+		for i in 0..self.len {
+			x.push(unsafe { T::from_ptr(*self.ptr.add(i)) });
 		}
-	}
-
-	pub fn to_raw(&self) -> RLArrayRaw {
-		RLArrayRaw {
-			data: self.data as usize,
-			count: 0,
-			max: 0
-		}
-	}
-
-	pub fn len(&self) -> isize {
-		self.count as isize
-	}
-
-	pub fn get(&self, index: isize) -> T {
-		unsafe {
-			let ptr = self.data.offset(index);
-			T::from_ptr(*ptr as *mut ())
-		}
+		unsafe { dropper(&self) };
+		x
 	}
 }
 
-#[repr(C)]
-pub struct RLArrayRaw {
-	data: usize,
-	count: u32,
-	max: u32
-}
+impl<T: Wrapper> Deref for BmrsArray<T> {
+	type Target = [T];
 
-impl RLArrayRaw {
-	pub fn new() -> RLArrayRaw {
-		RLArrayRaw { data: 0, count: 0, max: 0 }
+	fn deref(&self) -> &Self::Target {
+		unsafe { slice::from_raw_parts(self.ptr.cast::<T>(), self.len) }
 	}
 }
 

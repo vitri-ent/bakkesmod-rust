@@ -1,6 +1,6 @@
 use std::mem::MaybeUninit;
 
-use crate::prelude::{cvar_manager::CVarManager, game::Game};
+use crate::wrappers::{CVarManager, Game};
 
 #[repr(C)]
 pub struct PluginInfo {

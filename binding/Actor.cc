@@ -33,6 +33,11 @@ extern "C" {
 		return bmrs::ConvertVec3(native->GetAngularVelocity());
 	}
 
+	bmrsQuat bmrsActor_get_rotation(const bmrsActor *self) {
+		ActorWrapper *native = (ActorWrapper *)self;
+		return bmrs::ConvertQuat(native->GetRotation());
+	}
+
 	bool bmrsActor_is_hidden(const bmrsActor *self) {
 		ActorWrapper *native = (ActorWrapper *)self;
 		return native->GetbHidden();

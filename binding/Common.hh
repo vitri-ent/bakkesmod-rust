@@ -2,35 +2,59 @@
 
 #include <string>
 
+#include <bakkesmod/wrappers/arraywrapper.h>
 #include <bakkesmod/wrappers/WrapperStructs.h>
 
-extern "C" {
-	struct bmrsString {
-		const char *ptr;
-		size_t len;
-		std::string *backed;
-	};
+struct bmrsString {
+	const char *ptr;
+	size_t len;
+	std::string *backed;
+};
 
-	struct bmrsLinearColor {
-		float r;
-		float g;
-		float b;
-		float a;
-	};
+struct bmrsLinearColor {
+	float r;
+	float g;
+	float b;
+	float a;
+};
 
-	struct bmrsVec3 {
-		float x;
-		float y;
-		float z;
-	};
+struct bmrsVec3 {
+	float x;
+	float y;
+	float z;
+};
 
-	struct bmrsQuat {
-		float x;
-		float y;
-		float z;
-		float w;
-	};
-}
+struct bmrsQuat {
+	float x;
+	float y;
+	float z;
+	float w;
+};
+
+#define BMRS_ARRAY(T)                                                                \
+	struct T##Wrapper;                                                               \
+	struct bmrsArr##T {                                                              \
+		bmrs##T **ptr;                                                               \
+		size_t len;                                                                  \
+		std::vector<bmrs##T *> *backed;                                              \
+	};                                                                               \
+	namespace bmrs {                                                                 \
+		static inline bmrsArr##T ConvertArray(ArrayWrapper<T##Wrapper> array) {      \
+			std::vector<bmrs##T *> *v = new std::vector<bmrs##T *>(array.Count());   \
+			for (int i = 0; i < array.Count(); i++) {                                \
+				v->at(i) = bmrs::Convert##T(array.Get(i));                           \
+			}                                                                        \
+			return bmrsArr##T {                                                      \
+				.ptr = v->data(),                                                    \
+				.len = v->size(),                                                    \
+				.backed = v                                                          \
+			};                                                                       \
+		}                                                                            \
+	}
+#define BMRS_ARRAY_IMPL(T)                  \
+	void bmrsArr##T##_drop(bmrsArr##T *a) { \
+		delete a->backed;                   \
+	}
 
 namespace bmrs {
 	static inline bmrsString ConvertString(std::string string) {
