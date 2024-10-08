@@ -33,8 +33,9 @@ pub use self::pri::{Pri, PriT};
 mod server;
 pub use self::server::{Server, ServerT};
 mod structs;
-pub use self::structs::{LinearColor, Quat, Vector, Vector2};
+pub use self::structs::{LinearColor, Quat, Vector, Vector2, VehicleInputs};
 mod team_info;
+pub use self::team_info::{TeamInfo, TeamInfoT};
 mod vehicle;
 pub use self::vehicle::{Vehicle, VehicleT};
 

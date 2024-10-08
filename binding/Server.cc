@@ -18,6 +18,11 @@ extern "C" {
 		native->SpawnCar(23, bmrs::ConvertString(name));
 	}
 
+	void bmrsServer_spawn_bot(const bmrsServer *self, bmrsString *name) {
+		ServerWrapper *native = (ServerWrapper *)self;
+		native->SpawnBot(23, bmrs::ConvertString(name));
+	}
+
 	bmrsArrCar bmrsServer_get_cars(const bmrsServer *self) {
 		ServerWrapper *native = (ServerWrapper *)self;
 		return bmrs::ConvertArray(native->GetCars());

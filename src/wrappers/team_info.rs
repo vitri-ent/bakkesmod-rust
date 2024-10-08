@@ -10,6 +10,7 @@ pub struct TeamInfo(*mut ());
 impl_object!(TeamInfo);
 
 impl ActorT for TeamInfo {}
+impl TeamInfoT for TeamInfo {}
 
 unsafe impl Wrapper for TeamInfo {
 	unsafe fn wrap_ptr(addr: usize) -> *mut () {

@@ -212,7 +212,7 @@ impl Rotator {
 	}
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct Quat {
 	pub x: f32,
@@ -300,23 +300,23 @@ impl ReplicatedRBState {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct VehicleInputs {
-	throttle: f32,
-	steer: f32,
-	pitch: f32,
-	yaw: f32,
-	roll: f32,
-	dodge_forward: f32,
-	dodge_strafe: f32,
-	jump: bool,
-	activate_boost: bool,
-	holding_boost: bool,
-	handbrake: bool,
-	jumped: bool
+	pub throttle: f32,
+	pub steer: f32,
+	pub pitch: f32,
+	pub yaw: f32,
+	pub roll: f32,
+	pub dodge_forward: f32,
+	pub dodge_strafe: f32,
+	pub flags: u8
 }
 impl_unreal_pointer_struct!(VehicleInputs);
 
 impl VehicleInputs {
-	pub fn new() -> Self {
+	pub const JUMP: u8 = 1 << 1;
+	pub const BOOST: u8 = 1 << 3 | 1 << 2;
+	pub const BRAKE: u8 = 1 << 5;
+
+	pub const fn new() -> Self {
 		Self {
 			throttle: 0.0,
 			steer: 0.0,
@@ -325,12 +325,16 @@ impl VehicleInputs {
 			roll: 0.0,
 			dodge_forward: 0.0,
 			dodge_strafe: 0.0,
-			jump: false,
-			activate_boost: false,
-			holding_boost: false,
-			handbrake: false,
-			jumped: false
+			flags: 0
 		}
+	}
+
+	pub const fn has(&self, flag: u8) -> bool {
+		self.flags & flag == flag
+	}
+
+	pub const fn set(&mut self, flag: u8) {
+		self.flags |= flag;
 	}
 }
 

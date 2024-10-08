@@ -19,6 +19,10 @@ pub trait ServerT: ObjectT {
 		unsafe { bmrsServer_spawn_car(self.ptr(), &name.into()) };
 	}
 
+	fn spawn_bot(&self, name: &str) {
+		unsafe { bmrsServer_spawn_bot(self.ptr(), &name.into()) };
+	}
+
 	fn cars(&self) -> Vec<Car> {
 		unsafe { bmrsServer_get_cars(self.ptr()) }.into_vec(bmrsArrCar_drop)
 	}
@@ -37,6 +41,7 @@ impl Drop for Server {
 extern "C" {
 	fn bmrsServer_get_ball(this: *mut ()) -> *mut ();
 	fn bmrsServer_spawn_car(this: *mut (), name: *const BmrsString) -> *mut ();
+	fn bmrsServer_spawn_bot(this: *mut (), name: *const BmrsString) -> *mut ();
 	fn bmrsServer_get_cars(this: *mut ()) -> BmrsArray<Car>;
 	fn bmrsServer_get_pris(this: *mut ()) -> BmrsArray<Pri>;
 	fn bmrsServer_drop(this: *mut ());

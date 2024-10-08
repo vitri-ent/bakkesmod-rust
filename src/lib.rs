@@ -114,5 +114,5 @@ pub mod prelude {
 
 	pub use crate::console::console_print;
 	pub use crate::internal::{bakkesmod_exit, bakkesmod_init};
-	pub use crate::wrappers::{ActorT, BoostPickupT, BoostT, CarT, ObjectT, PlayerReplicationInfoT, PriT, ServerT, VehicleT};
+	pub use crate::wrappers::{ActorT, BoostPickupT, BoostT, CarT, ObjectT, PlayerReplicationInfoT, PriT, ServerT, TeamInfoT, VehicleT};
 }

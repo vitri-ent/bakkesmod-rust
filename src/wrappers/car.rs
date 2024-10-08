@@ -32,8 +32,8 @@ pub trait CarT: VehicleT {
 		unsafe { bmrsCar_has_flip(self.ptr()) }
 	}
 
-	fn pri(&self) -> Pri {
-		Pri::new(unsafe { bmrsCar_get_pri(self.ptr()) })
+	fn pri(&self) -> Option<Pri> {
+		Pri::try_new(unsafe { bmrsCar_get_pri(self.ptr()) })
 	}
 }
 

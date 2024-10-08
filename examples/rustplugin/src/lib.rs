@@ -5,6 +5,7 @@ use bakkesmod::game;
 use bakkesmod::prelude::*;
 use bakkesmod::wrappers::Actor;
 use bakkesmod::wrappers::Car;
+use bakkesmod::wrappers::VehicleInputs;
 
 #[plugin_init(RustPlugin)]
 pub fn on_load() {
@@ -37,9 +38,33 @@ pub fn on_load() {
 		let server = game::current_state().unwrap();
 		log_console!("cars: {}", server.cars().len());
 		for car in server.cars() {
-			let pri = car.pri();
+			let Some(pri) = car.pri() else {
+				continue;
+			};
 			log_console!("car ({}) {} - boost {}", pri.index(), pri.player_name(), car.boost().amount());
 		}
+	});
+
+	game::hook_event("Function TAGame.Car_TA.SetVehicleInput", |car: &Car, params| {
+		let Some(pri) = car.pri() else {
+			return;
+		};
+		log_console!(
+			"car {}/{} ({}, {:?}) - demo {}, on ground {}, has jump {}, flip {}",
+			pri.index(),
+			pri.team().index(),
+			car.position(),
+			car.rotation(),
+			car.is_hidden(),
+			car.is_on_ground(),
+			car.can_jump(),
+			car.has_flip()
+		);
+		// let p = unsafe { params.get_mut::<VehicleInputs>(0) };
+		// p.set(VehicleInputs::BOOST);
+		// if p.flags != 0 {
+		// 	log_console!("flags: {:08b}", p.flags);
+		// }
 	});
 
 	console::register_notifier("rust_demolish", |args| {
