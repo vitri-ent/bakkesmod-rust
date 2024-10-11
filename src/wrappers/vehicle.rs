@@ -25,8 +25,8 @@ pub trait VehicleT: ActorT {
 		unsafe { bmrsVehicle_is_on_ground(self.ptr()) }
 	}
 
-	fn boost(&self) -> Boost {
-		Boost::new(unsafe { bmrsVehicle_get_boost_component(self.ptr()) })
+	fn boost(&self) -> Option<Boost> {
+		Boost::try_new(unsafe { bmrsVehicle_get_boost_component(self.ptr()) })
 	}
 }
 
