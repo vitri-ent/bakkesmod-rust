@@ -1,12 +1,13 @@
-use std::collections::HashMap;
-use std::ffi::{CStr, CString};
-use std::mem::ManuallyDrop;
-use std::os::raw::c_char;
-use std::ptr::{self, addr_of, addr_of_mut};
-use std::sync::Mutex;
+use std::{
+	collections::HashMap,
+	ffi::{CStr, CString},
+	mem::ManuallyDrop,
+	os::raw::c_char,
+	ptr::{self, addr_of, addr_of_mut},
+	sync::Mutex
+};
 
-use super::cvar::CVar;
-use super::structs::BmrsString;
+use super::{cvar::CVar, structs::BmrsString};
 
 pub struct CVarManager {
 	ptr: *mut (),

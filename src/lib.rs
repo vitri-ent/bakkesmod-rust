@@ -110,9 +110,15 @@ pub mod internal;
 
 pub mod prelude {
 	pub use bakkesmod_macros::plugin_init;
-	pub use {color, lin_color, log_console, vec2, vec3};
+	pub use color;
+	pub use lin_color;
+	pub use log_console;
+	pub use vec2;
+	pub use vec3;
 
-	pub use crate::console::console_print;
-	pub use crate::internal::{bakkesmod_exit, bakkesmod_init};
-	pub use crate::wrappers::{ActorT, BoostPickupT, BoostT, CarT, ObjectT, PlayerReplicationInfoT, PriT, ServerT, TeamInfoT, VehicleT};
+	pub use crate::{
+		console::console_print,
+		internal::{bakkesmod_exit, bakkesmod_init},
+		wrappers::{ActorT, BoostPickupT, BoostT, CarT, ObjectT, PlayerReplicationInfoT, PriT, ServerT, TeamInfoT, VehicleT}
+	};
 }

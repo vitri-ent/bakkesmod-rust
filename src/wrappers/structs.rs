@@ -1,12 +1,15 @@
 use core::{slice, str};
-use std::convert::From;
-use std::ffi::{CStr, CString};
-use std::hash::{Hash, Hasher};
-use std::marker::{PhantomData, Sized};
-use std::mem::ManuallyDrop;
-use std::ops::{self, Deref};
-use std::os::raw::c_char;
-use std::{fmt, ptr};
+use std::{
+	convert::From,
+	ffi::{CStr, CString},
+	fmt,
+	hash::{Hash, Hasher},
+	marker::{PhantomData, Sized},
+	mem::ManuallyDrop,
+	ops::{self, Deref},
+	os::raw::c_char,
+	ptr
+};
 
 use super::*;
 

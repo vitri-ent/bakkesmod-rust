@@ -1,12 +1,16 @@
-use std::collections::HashMap;
-use std::ffi::{CStr, CString};
-use std::mem::ManuallyDrop;
-use std::os::raw::c_char;
-use std::ptr;
-use std::sync::Mutex;
+use std::{
+	collections::HashMap,
+	ffi::{CStr, CString},
+	mem::ManuallyDrop,
+	os::raw::c_char,
+	ptr,
+	sync::Mutex
+};
 
-use super::cvar_manager::CVarManager;
-use super::structs::{BmrsString, LinearColor};
+use super::{
+	cvar_manager::CVarManager,
+	structs::{BmrsString, LinearColor}
+};
 use crate::internal;
 
 pub struct CVar {

@@ -1,8 +1,8 @@
 use super::{
+	ObjectT, Pri, Wrapper,
 	actor::ActorT,
 	structs::{BmrsString, Vector},
-	vehicle::VehicleT,
-	ObjectT, Pri, Wrapper
+	vehicle::VehicleT
 };
 
 #[repr(transparent)]

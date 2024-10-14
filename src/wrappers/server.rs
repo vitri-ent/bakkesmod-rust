@@ -1,7 +1,7 @@
 use super::{
+	Car, ObjectT, Pri, UnrealPointer,
 	actor::Actor,
-	structs::{BmrsArray, BmrsString},
-	Car, ObjectT, Pri, UnrealPointer
+	structs::{BmrsArray, BmrsString}
 };
 
 #[repr(transparent)]

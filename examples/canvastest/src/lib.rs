@@ -1,6 +1,4 @@
-use bakkesmod::game;
-use bakkesmod::prelude::*;
-use bakkesmod::wrappers::canvas::Canvas;
+use bakkesmod::{game, prelude::*, wrappers::canvas::Canvas};
 
 #[plugin_init]
 fn on_load() {

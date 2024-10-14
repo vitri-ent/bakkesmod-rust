@@ -1,11 +1,13 @@
 #![allow(unused)]
 
-use std::convert::From;
-use std::ffi::{CStr, CString};
-use std::fmt;
-use std::marker::{PhantomData, Sized};
-use std::ops;
-use std::os::raw::c_char;
+use std::{
+	convert::From,
+	ffi::{CStr, CString},
+	fmt,
+	marker::{PhantomData, Sized},
+	ops,
+	os::raw::c_char
+};
 
 use crate::prelude::*;
 

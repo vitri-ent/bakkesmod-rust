@@ -5,7 +5,7 @@ use std::{
 	sync::Mutex
 };
 
-use super::{actor::Actor, car::Car, server::Server, structs::BmrsString, ActorT, ObjectT, UnrealPointer, Wrapper};
+use super::{ActorT, ObjectT, UnrealPointer, Wrapper, actor::Actor, car::Car, server::Server, structs::BmrsString};
 
 pub(crate) struct HookCallback {
 	wrapper_factory: unsafe fn(usize) -> *mut (),

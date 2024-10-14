@@ -1,4 +1,4 @@
-use super::{structs::Vector, ObjectT, Quat, Wrapper};
+use super::{ObjectT, Quat, Wrapper, structs::Vector};
 
 #[repr(transparent)]
 pub struct Actor(*mut ());

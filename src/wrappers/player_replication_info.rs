@@ -1,9 +1,9 @@
 use super::{
+	ObjectT, UnrealPointer, Wrapper,
 	actor::ActorT,
 	structs::{BmrsString, Vector},
 	team_info::TeamInfo,
-	vehicle::VehicleT,
-	ObjectT, UnrealPointer, Wrapper
+	vehicle::VehicleT
 };
 
 #[repr(transparent)]

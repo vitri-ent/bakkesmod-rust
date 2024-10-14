@@ -1,4 +1,4 @@
-use super::{actor::ActorT, structs::Vector, Boost, ObjectT, Wrapper};
+use super::{Boost, ObjectT, Wrapper, actor::ActorT, structs::Vector};
 
 #[repr(transparent)]
 pub struct Vehicle(*mut ());

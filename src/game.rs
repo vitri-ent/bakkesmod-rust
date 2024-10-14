@@ -1,6 +1,8 @@
-use crate::internal;
-use crate::prelude::ActorT;
-use crate::wrappers::{Car, EventParams, Server, Wrapper};
+use crate::{
+	internal,
+	prelude::ActorT,
+	wrappers::{Car, EventParams, Server, Wrapper}
+};
 
 pub fn hook_event<F, A>(event: &str, cb: F)
 where

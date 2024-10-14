@@ -1,6 +1,4 @@
-use bakkesmod::prelude::*;
-use bakkesmod::wrappers::unreal::*;
-use bakkesmod::{console, game};
+use bakkesmod::{console, game, prelude::*, wrappers::unreal::*};
 
 #[plugin_init]
 pub fn on_load() {

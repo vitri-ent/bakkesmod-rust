@@ -1,5 +1,4 @@
-use crate::internal;
-use crate::wrappers::CVar;
+use crate::{internal, wrappers::CVar};
 
 pub fn console_print(text: &str) {
 	internal::bakkesmod().cvar_manager.log(text);
